@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+
+{% block title %}Clientes - Controle Financeiro{% endblock %}
+
+{% block content %}
+<div class="clients">
+    <div class="header">
+        <h1>Clientes</h1>
+        <button class="btn btn-primary" onclick="document.getElementById('new-client-form').style.display='block'">
+            Novo Cliente
+        </button>
+    </div>
+
+    <!-- Form for new client -->
+    <div id="new-client-form" class="form-container" style="display: none;">
+        <h2>Novo Cliente</h2>
+        <form method="POST" class="form">
+            <div class="form-group">
+                <label for="name">Nome</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Telefone</label>
+                <input type="tel" id="phone" name="phone" required>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Salvar</button>
+                <button type="button" class="btn btn-secondary" 
+                        onclick="document.getElementById('new-client-form').style.display='none'">
+                    Cancelar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Clients list -->
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Telefone</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in clients %}
+                <tr>
+                    <td>{{ client.name }}</td>
+                    <td>{{ client.email }}</td>
+                    <td>{{ client.phone }}</td>
+                    <td>
+                        <button class="btn btn-small btn-edit">Editar</button>
+                        <button class="btn btn-small btn-delete">Excluir</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
