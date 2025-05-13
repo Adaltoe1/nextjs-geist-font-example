@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Controle Financeiro{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    {% if current_user.is_authenticated %}
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="{{ url_for('dashboard') }}">Controle Financeiro</a>
+        </div>
+        <div class="nav-links">
+            <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                Dashboard
+            </a>
+            <a href="{{ url_for('transactions') }}" class="nav-link {% if request.endpoint == 'transactions' %}active{% endif %}">
+                Transações
+            </a>
+            <a href="{{ url_for('clients') }}" class="nav-link {% if request.endpoint == 'clients' %}active{% endif %}">
+                Clientes
+            </a>
+            <a href="{{ url_for('companies') }}" class="nav-link {% if request.endpoint == 'companies' %}active{% endif %}">
+                Empresas
+            </a>
+            <div class="nav-divider"></div>
+            <a href="{{ url_for('logout') }}" class="nav-link">Sair</a>
+        </div>
+        <button class="mobile-menu-button" onclick="toggleMobileMenu()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+    </nav>
+    {% endif %}
+
+    <div class="mobile-menu">
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('dashboard') }}" class="mobile-nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+            Dashboard
+        </a>
+        <a href="{{ url_for('transactions') }}" class="mobile-nav-link {% if request.endpoint == 'transactions' %}active{% endif %}">
+            Transações
+        </a>
+        <a href="{{ url_for('clients') }}" class="mobile-nav-link {% if request.endpoint == 'clients' %}active{% endif %}">
+            Clientes
+        </a>
+        <a href="{{ url_for('companies') }}" class="mobile-nav-link {% if request.endpoint == 'companies' %}active{% endif %}">
+            Empresas
+        </a>
+        <div class="mobile-nav-divider"></div>
+        <a href="{{ url_for('logout') }}" class="mobile-nav-link">Sair</a>
+        {% endif %}
+    </div>
+
+    <main class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                        <button type="button" class="alert-close" onclick="this.parentElement.remove()">×</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <script>
+        function toggleMobileMenu() {
+            const mobileMenu = document.querySelector('.mobile-menu');
+            mobileMenu.classList.toggle('active');
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const mobileMenu = document.querySelector('.mobile-menu');
+            const mobileMenuButton = document.querySelector('.mobile-menu-button');
+            
+            if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+                mobileMenu.classList.remove('active');
+            }
+        });
+
+        // Auto-hide alerts after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function(alert) {
+                    alert.style.opacity = '0';
+                    setTimeout(function() {
+                        alert.remove();
+                    }, 300);
+                });
+            }, 5000);
+        });
+    </script>
+
+    <style>
+    /* Additional styles for layout components */
+    .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+    }
+
+    .main-content {
+        margin-top: 64px;
+        padding: 2rem;
+        min-height: calc(100vh - 64px);
+    }
+
+    .nav-brand a {
+        text-decoration: none;
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+    }
+
+    .nav-link {
+        text-decoration: none;
+        color: var(--secondary-color);
+        font-weight: 500;
+        padding: 0.5rem;
+        border-radius: 0.375rem;
+        transition: all 0.2s;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+        color: var(--primary-color);
+        background-color: rgba(37, 99, 235, 0.1);
+    }
+
+    .nav-divider {
+        height: 24px;
+        width: 1px;
+        background-color: var(--border-color);
+        margin: 0 0.5rem;
+    }
+
+    .mobile-menu-button {
+        display: none;
+        background: none;
+        border: none;
+        color: var(--secondary-color);
+        cursor: pointer;
+        padding: 0.5rem;
+    }
+
+    .mobile-menu {
+        display: none;
+        position: fixed;
+        top: 64px;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transform: translateY(-100%);
+        transition: transform 0.3s ease-in-out;
+        z-index: 999;
+    }
+
+    .mobile-menu.active {
+        transform: translateY(0);
+    }
+
+    .mobile-nav-link {
+        display: block;
+        padding: 0.75rem;
+        text-decoration: none;
+        color: var(--secondary-color);
+        font-weight: 500;
+        border-radius: 0.375rem;
+        transition: all 0.2s;
+    }
+
+    .mobile-nav-link:hover,
+    .mobile-nav-link.active {
+        color: var(--primary-color);
+        background-color: rgba(37, 99, 235, 0.1);
+    }
+
+    .mobile-nav-divider {
+        height: 1px;
+        background-color: var(--border-color);
+        margin: 0.5rem 0;
+    }
+
+    .alert {
+        position: relative;
+        padding: 1rem 3rem 1rem 1rem;
+        margin-bottom: 1rem;
+        border-radius: 0.375rem;
+        transition: opacity 0.3s;
+    }
+
+    .alert-success {
+        background-color: #dcfce7;
+        color: var(--success-color);
+    }
+
+    .alert-danger {
+        background-color: #fee2e2;
+        color: var(--danger-color);
+    }
+
+    .alert-close {
+        position: absolute;
+        top: 50%;
+        right: 1rem;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: currentColor;
+        font-size: 1.25rem;
+        cursor: pointer;
+        padding: 0.25rem;
+        opacity: 0.5;
+        transition: opacity 0.2s;
+    }
+
+    .alert-close:hover {
+        opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+        .nav-links {
+            display: none;
+        }
+
+        .mobile-menu-button {
+            display: block;
+        }
+
+        .mobile-menu {
+            display: block;
+        }
+
+        .main-content {
+            padding: 1rem;
+        }
+    }
+    </style>
+</body>
+</html>
