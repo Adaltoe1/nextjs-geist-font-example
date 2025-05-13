@@ -1,0 +1,141 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard - Controle Financeiro{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <h1>Dashboard</h1>
+    
+    <div class="summary-cards">
+        <div class="card">
+            <h3>Total Entradas</h3>
+            <p class="amount positive">R$ {{ "%.2f"|format(total_income) }}</p>
+        </div>
+        <div class="card">
+            <h3>Total Despesas</h3>
+            <p class="amount negative">R$ {{ "%.2f"|format(total_expenses) }}</p>
+        </div>
+        <div class="card">
+            <h3>Saldo</h3>
+            <p class="amount {% if balance >= 0 %}positive{% else %}negative{% endif %}">
+                R$ {{ "%.2f"|format(balance) }}
+            </p>
+        </div>
+    </div>
+
+    <div class="recent-transactions">
+        <div class="header">
+            <h2>Transações Recentes</h2>
+            <a href="{{ url_for('create_transaction') }}" class="btn btn-primary">Nova Transação</a>
+        </div>
+
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Tipo</th>
+                        <th>Método</th>
+                        <th>Valor</th>
+                        <th>Descrição</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions[:5] %}
+                    <tr>
+                        <td>{{ transaction.date.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>{{ transaction.type.title() }}</td>
+                        <td>{{ transaction.payment_method.title() }}</td>
+                        <td class="{{ 'positive' if transaction.type == 'entrada' else 'negative' }}">
+                            R$ {{ "%.2f"|format(transaction.amount) }}
+                        </td>
+                        <td>{{ transaction.description }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if transactions|length > 5 %}
+        <div class="view-all">
+            <a href="{{ url_for('transactions') }}" class="btn btn-secondary">Ver Todas as Transações</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="quick-actions">
+        <div class="row">
+            <div class="col">
+                <a href="{{ url_for('clients') }}" class="quick-action-card">
+                    <h3>Clientes</h3>
+                    <p>Gerenciar cadastro de clientes</p>
+                </a>
+            </div>
+            <div class="col">
+                <a href="{{ url_for('companies') }}" class="quick-action-card">
+                    <h3>Empresas</h3>
+                    <p>Gerenciar empresas do grupo</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.dashboard {
+    padding: 2rem 0;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.recent-transactions {
+    margin-top: 3rem;
+}
+
+.quick-actions {
+    margin-top: 3rem;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.quick-action-card {
+    display: block;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    color: var(--text-color);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.quick-action-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.quick-action-card h3 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.quick-action-card p {
+    color: var(--secondary-color);
+    margin: 0;
+}
+
+.view-all {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+</style>
+{% endblock %}
