@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+
+{% block title %}Empresas - Controle Financeiro{% endblock %}
+
+{% block content %}
+<div class="companies">
+    <div class="header">
+        <h1>Empresas do Grupo</h1>
+        <button class="btn btn-primary" onclick="document.getElementById('new-company-form').style.display='block'">
+            Nova Empresa
+        </button>
+    </div>
+
+    <!-- Form for new company -->
+    <div id="new-company-form" class="form-container" style="display: none;">
+        <h2>Nova Empresa</h2>
+        <form method="POST" class="form">
+            <div class="form-group">
+                <label for="name">Nome da Empresa</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="contact">Contato Principal</label>
+                <input type="text" id="contact" name="contact" required>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Salvar</button>
+                <button type="button" class="btn btn-secondary" 
+                        onclick="document.getElementById('new-company-form').style.display='none'">
+                    Cancelar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Companies list -->
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nome da Empresa</th>
+                    <th>Contato Principal</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for company in companies %}
+                <tr>
+                    <td>{{ company.name }}</td>
+                    <td>{{ company.contact }}</td>
+                    <td>
+                        <button class="btn btn-small btn-edit">Editar</button>
+                        <button class="btn btn-small btn-delete">Excluir</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
